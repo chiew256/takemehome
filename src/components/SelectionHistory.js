@@ -1,32 +1,34 @@
 import { useEffect } from "react";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+
 import { loadSelections } from "../selectionActions";
 
-const SelectionHistory = ({ selectionHistory, loadSelections }) => {
-  useEffect(() => {
-    loadSelections();
-  }, []);
+const SelectionHistory = () => {
+    const dispatch = useDispatch();
 
-  console.log(loadSelections());
-  console.log(selectionHistory);
+    const selectionHistory = useSelector((state) => state.selections.selectionHistory);
 
-  return (
-    <div>
-      {selectionHistory !== null ? (
-        <div>Can try select a location hehe</div>
-      ) : (
-        selectionHistory?.map((selection, index) => (
-          <div key={index}>{selection}</div>
-        ))
-      )}
-    </div>
-  );
+    useEffect(() => {
+        dispatch(loadSelections(['test']));
+    }, []);
+
+    // first mount, loadSelections haven't update the store
+    // second mount, store updated, selectionHistory dependency triggered
+    useEffect(() => {
+        console.log({ selectionHistory });
+    }, [selectionHistory]);
+
+    return (
+        <div>
+            {selectionHistory !== null ? (
+                <div>Can try select a location hehe</div>
+            ) : (
+                selectionHistory?.map((selection, index) => (
+                    <div key={index}>{selection}</div>
+                ))
+            )}
+        </div>
+    );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    selectionHistory: state.selectionHistory,
-  };
-};
-
-export default connect(mapStateToProps, { loadSelections })(SelectionHistory);
+export default SelectionHistory;
